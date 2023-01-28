@@ -20,13 +20,14 @@ async function getConfirmations(txHash) {
   }
 }
 
-function confirmEtherTransaction(txHash, confirmations = 10, bot) {
+function confirmEtherTransaction(txHash, confirmations, bot) {
   setTimeout(async () => {
     // Get current number of confirmations and compare it with sought-for value
     const trxConfirmations = await getConfirmations(txHash)
     console.log('Transaction with hash ' + txHash + ' has ' + trxConfirmations + ' confirmation(s)')
+    console.log(`trxConfirmations ${trxConfirmations} >= confirmations ${confirmations}`, trxConfirmations >= confirmations)
 
-    if (trxConfirmations >= confirmations) {
+    if (trxConfirmations >= 3) {
       // Handle confirmation event according to your business logic
 
       console.log('Transaction with hash ' + txHash + ' has been successfully confirmed')
@@ -35,7 +36,7 @@ function confirmEtherTransaction(txHash, confirmations = 10, bot) {
       return
     }
     // Recursive call
-    return confirmEtherTransaction(txHash, confirmations)
+    return confirmEtherTransaction(txHash, confirmations, bot)
   }, 30 * 1000)
 }
 

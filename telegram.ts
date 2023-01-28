@@ -8,7 +8,7 @@ import { TelegrafContext } from "telegraf/typings/context";
 
 export const BOT_TOKEN = process.env.BOT_TOKEN;
 export const DOMAIN_URL = process.env.DOMAIN_URL;
-console.log("@@@@@@@@@@@", BOT_TOKEN);
+console.log("@@@@@@@@@@@", BOT_TOKEN, process.env.CHAT_ID);
 const SECRET_HASH = "32e58fbahey833349df3383dc910e180";
 // Note: change to false when running locally
 const BASE_PATH =
@@ -70,6 +70,6 @@ bot.launch({
     domain: DOMAIN_URL,
 
     // Port to listen on; e.g.: 8080
-    port: 3000,
+    port: 2000,
   },
 });

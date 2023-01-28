@@ -26,24 +26,49 @@ function watchEtherTransfers(bot) {
         // Get transaction details
         const trx = await web3Http.eth.getTransaction(txHash);
 
-        const valid = validateTransaction(trx);
+        const { valid, direction } = validateTransaction(trx);
         // If transaction is not valid, simply return
         if (!valid) return;
 
-        // console.log(
-        //   "===data===" +
-        //     "Found incoming Ether transaction from " +
-        //     trx.from.toLowerCase() +
-        //     " to " +
-        //     trx.to.toLowerCase()
-        // );
-        console.log("Transaction value is: " + trx.value);
-        console.log("Transaction hash is: " + txHash + "\n");
-        console.log("Transaction is: " + JSON.stringify(trx) + "\n");
-        bot.telegram.sendMessage(process.env.CHAT_ID, JSON.stringify(trx))
+        let message;
+
+        if (direction === "outgoing") {
+          message =
+            `[⛔️ OUTGOING TXN](https://goerli.etherscan.io/tx/${txHash}):\n\n` +
+            `✉️ From: [${shortenAddress(
+              trx.from.toLowerCase()
+            )}](https://goerli.etherscan.io/address/${trx.from})\n` +
+            `📪 To: [${shortenAddress(
+              trx.to.toLowerCase()
+            )}](https://goerli.etherscan.io/address/${trx.to})\n` +
+            `💰 Txn value: ${gweiToEth(trx.value)} Ξ\n` +
+            `#️⃣ Txn hash: [${shortenAddress(
+              txHash
+            )}](https://goerli.etherscan.io/tx/${txHash})\n`;
+        } else if (direction === "incoming") {
+          message =
+            `[✅️ INCOMING TXN](https://goerli.etherscan.io/tx/${txHash}):\n\n` +
+            `✉️ From: [${shortenAddress(
+              trx.from.toLowerCase()
+            )}](https://goerli.etherscan.io/address/${trx.from})\n` +
+            `📪 To: [${shortenAddress(
+              trx.to.toLowerCase()
+            )}](https://goerli.etherscan.io/address/${trx.to})\n` +
+            `💰 Txn value: ${gweiToEth(trx.value)} Ξ\n` +
+            `🌱 Txn hash: [${shortenAddress(
+              txHash
+            )}](https://goerli.etherscan.io/tx/${txHash})\n`;
+        }
+
+        console.log("@@@@@ sending", valid, direction, process.env.CHAT_ID);
+        // bot.telegram.sendMessage(process.env.CHAT_ID, message);
+        bot.telegram.sendMessage(process.env.CHAT_ID, message, {
+          parse_mode: "Markdown",
+          disable_web_page_preview: true,
+        });
 
         // Initiate transaction confirmation
-        confirmEtherTransaction(txHash, bot);
+        confirmEtherTransaction(txHash, 1, bot);
       } catch (error) {
         console.log(error);
       }
@@ -56,6 +81,15 @@ function watchEtherTransfers(bot) {
   // subscription.unsubscribe(function (error, success) {
   //   if (success) console.log("Successfully unsubscribed!");
   // });
+}
+
+function shortenAddress(address) {
+  return address.slice(0, 7) + "..." + address.slice(-6, -1);
+}
+
+function gweiToEth(value) {
+  console.log("@@@@@@@", escape(Web3.utils.fromWei(value, "ether")));
+  return escape(Web3.utils.fromWei(value, "ether"));
 }
 
 function watchTokenTransfers2() {

@@ -4,7 +4,8 @@
   "description": "A Telegram bot template that uses telegraf.js + Next.js + Supabase",
   "main": "telegram.ts",
   "scripts": {
-    "start": "nodemon telegram.ts",
+    "dev": "nodemon telegram.ts",
+    "start": "ts-node telegram.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
